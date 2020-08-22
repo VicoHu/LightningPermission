@@ -1,0 +1,49 @@
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace LightningPermission
+{
+    public static class LightningExtensions
+    {
+        /// <summary>
+        /// 使用用户自定义行为的Lightning身份验证插件
+        /// </summary>
+        /// <param name="builder">IApplicationBuilder实例</param>
+        /// <param name="StartupType">Startup的Type对象</param>
+        /// <param name="ConnectionString">数据库连接字符串（暂时仅支持SqlServer）</param>
+        /// <param name="permissionLifeCycle">传入用户自定义的生命周期</param>
+        /// <returns></returns>
+        public static IApplicationBuilder UseLightningPermission(this IApplicationBuilder builder, Type StartupType, string ConnectionString, IPermissionLifeCycle permissionLifeCycle)
+        {
+            return builder.Use(async (context, next) =>
+            {
+                // 初始化生命周期
+                InternalPermissionLifeCycle InternalLifeCycle = new InternalPermissionLifeCycle(permissionLifeCycle, StartupType, context, next);
+                // 运行生命周期
+                InternalLifeCycle.RunLifeCycle();
+            });
+        }
+
+        /// <summary>
+        /// 使用官方配置的Lightning身份验证插件
+        /// </summary>
+        /// <param name="builder">IApplicationBuilder实例</param>
+        /// <param name="StartupType">Startup的Type对象</param>
+        /// <param name="ConnectionString">数据库连接字符串（暂时仅支持SqlServer）</param>
+        /// <returns>IApplicationBuilder实例</returns>
+        public static IApplicationBuilder UseLightningPermission(this IApplicationBuilder builder, Type StartupType, string ConnectionString)
+        {
+            return builder.Use(async (context, next) =>
+            {
+                // 初始化生命周期
+                InternalPermissionLifeCycle InternalLifeCycle = new InternalPermissionLifeCycle(new PermissionLifeCycle(ConnectionString), StartupType, context, next);
+                // 运行生命周期
+                InternalLifeCycle.RunLifeCycle();
+            });
+        }
+    }
+}
