@@ -10,12 +10,14 @@ namespace LightningPermission.AttributeGetter
     public class AttributeGetter
     {
 
-        public static Type GetControllerAttributes(Type StartupType, HttpContext context, Func<Task> next, Func<HttpContext, Permission, Func<Task>, Boolean> WillDoFunc)
+        public static Type GetControllerAttributes(Type StartupType, HttpContext context, RequestDelegate next, Func<HttpContext, Permission, RequestDelegate, Task<Boolean>> WillDoFunc, out bool IsControllerAllow)
         {
             Type ControllerType = null;
+            bool IsAllow = true;
+            IsControllerAllow = false;
             var assembly = StartupType.Assembly.GetTypes().AsEnumerable()
             .Where(type => typeof(ControllerBase).IsAssignableFrom(type)).ToList();
-            assembly.ForEach(d =>
+            assembly.ForEach(async d =>
             {
 
                 var PermissionAuthorize = d.GetCustomAttribute<Permission>();
@@ -28,7 +30,7 @@ namespace LightningPermission.AttributeGetter
                         if (d.Name == TargetControllerName)
                         {
                             ControllerType = d;
-                            WillDoFunc(context, PermissionAuthorize, next);
+                            IsAllow = await WillDoFunc(context, PermissionAuthorize, next);
                         }
                     }
                     catch (Exception)
@@ -37,19 +39,22 @@ namespace LightningPermission.AttributeGetter
                     }
                 }
             });
+            IsControllerAllow = IsAllow;
             return ControllerType;
         }
 
-        public static Type GetMethodAttributes(Type StartupType, HttpContext context, Func<Task> next, Func<HttpContext, Permission, Func<Task>, Boolean> WillDoFunc)
+        public static Type GetMethodAttributes(Type StartupType, HttpContext context, RequestDelegate next, bool IsControllerAllow, Func<HttpContext, Permission, RequestDelegate, Boolean, Task<Boolean>> WillDoFunc, out bool IsActionAllow)
         {
             Type ActionType = null;
+            bool IsAllow = false;
+            IsActionAllow = false;
             var assembly = StartupType.Assembly.GetTypes().AsEnumerable()
             .Where(type => typeof(ControllerBase).IsAssignableFrom(type)).ToList();
-            assembly.ForEach(r =>
+            assembly.ForEach(async r =>
             {
                 foreach (var methodInfo in r.GetMethods())
                 {
-                    foreach (Attribute attribute in methodInfo.GetCustomAttributes())
+                    methodInfo.GetCustomAttributes().ToList().ForEach(async attribute =>
                     {
                         if (attribute is Permission PermissionAuthorize)
                         {
@@ -66,7 +71,7 @@ namespace LightningPermission.AttributeGetter
                                 if (TargetControllerName == r.Name && TargetMethodName == methodInfo.Name)
                                 {
                                     ActionType = methodInfo.GetType();
-                                    WillDoFunc(context, PermissionAuthorize, next);
+                                    IsAllow = await WillDoFunc(context, PermissionAuthorize, next, IsControllerAllow);
                                 }
                             }
                             catch (Exception)
@@ -74,18 +79,21 @@ namespace LightningPermission.AttributeGetter
                                 throw;
                             }
                         }
-                    }
+                    });
                 }
             });
+            IsActionAllow = IsAllow;
             return ActionType;
         }
 
-        public static Type GetMethodAttributesAfter(Type StartupType, HttpContext context, Type ControllerType, Func<Task> next, Func<HttpContext, Permission, Func<Task>, Boolean> WillDoFunc)
+        public static Type GetMethodAttributesAfterAsync(Type StartupType, HttpContext context, Type ControllerType, RequestDelegate next, bool IsControllerAllow, Func<HttpContext, Permission, RequestDelegate, Boolean, Task<Boolean>> WillDoFunc, out bool IsActionAllow)
         {
             Type ActionType = null;
+            bool IsAllow = false;
+            IsActionAllow = false;
             foreach (var methodInfo in ControllerType.GetMethods())
             {
-                foreach (Attribute attribute in methodInfo.GetCustomAttributes())
+                methodInfo.GetCustomAttributes().ToList().ForEach(async attribute =>
                 {
                     if (attribute is Permission PermissionAuthorize)
                     {
@@ -98,7 +106,8 @@ namespace LightningPermission.AttributeGetter
                             if (TargetControllerName == ControllerType.Name && TargetMethodName == methodInfo.Name)
                             {
                                 ActionType = methodInfo.GetType();
-                                WillDoFunc(context, PermissionAuthorize, next);
+                                IsAllow = await WillDoFunc(context, PermissionAuthorize, next, IsControllerAllow);
+                                Console.WriteLine("IsAllow" + IsAllow);
                             }
                         }
                         catch (Exception)
@@ -106,8 +115,9 @@ namespace LightningPermission.AttributeGetter
                             throw;
                         }
                     }
-                }
+                });
             }
+            IsActionAllow = IsAllow;
             return ActionType;
         }
     }

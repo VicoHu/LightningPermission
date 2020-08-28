@@ -10,6 +10,9 @@
     <Description>Privilege Management System For DoNetCore 3.x</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IsPackable>true</IsPackable>
+    <Version>1.0.1</Version>
+    <Copyright />
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>

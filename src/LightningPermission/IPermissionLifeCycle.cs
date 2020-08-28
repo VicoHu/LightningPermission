@@ -8,15 +8,15 @@ namespace LightningPermission
 {
     public interface IPermissionLifeCycle
     {
-        public void BeforeGetControllerAttribute(HttpContext context);
+        public string BeforeGetControllerAttribute(HttpContext context);
 
-        public bool OnGetControllerAttribute(HttpContext context, Permission permission, Func<Task> next);
+        public Task<Boolean> OnGetControllerAttribute(HttpContext context, Permission permission, RequestDelegate next);
 
         public void AfterGetControllerAttribute(HttpContext context);
 
         public void BeforeGetMethodAttribute(HttpContext context);
 
-        public bool OnGetMethodAttribute(HttpContext context, Permission permission, Func<Task> next);
+        public Task<Boolean> OnGetMethodAttribute(HttpContext context, Permission permission, RequestDelegate next, bool IsControllerAllow);
 
         public void AfterGetMethodAttribute(HttpContext context);
     }

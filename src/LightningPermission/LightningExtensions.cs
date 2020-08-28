@@ -19,13 +19,7 @@ namespace LightningPermission
         /// <returns></returns>
         public static IApplicationBuilder UseLightningPermission(this IApplicationBuilder builder, Type StartupType, string ConnectionString, IPermissionLifeCycle permissionLifeCycle)
         {
-            return builder.Use(async (context, next) =>
-            {
-                // 初始化生命周期
-                InternalPermissionLifeCycle InternalLifeCycle = new InternalPermissionLifeCycle(permissionLifeCycle, StartupType, context, next);
-                // 运行生命周期
-                InternalLifeCycle.RunLifeCycle();
-            });
+            return builder.UseMiddleware<LightningMiddleware>(StartupType, ConnectionString, permissionLifeCycle);
         }
 
         /// <summary>
@@ -37,13 +31,9 @@ namespace LightningPermission
         /// <returns>IApplicationBuilder实例</returns>
         public static IApplicationBuilder UseLightningPermission(this IApplicationBuilder builder, Type StartupType, string ConnectionString)
         {
-            return builder.Use(async (context, next) =>
-            {
-                // 初始化生命周期
-                InternalPermissionLifeCycle InternalLifeCycle = new InternalPermissionLifeCycle(new PermissionLifeCycle(ConnectionString), StartupType, context, next);
-                // 运行生命周期
-                InternalLifeCycle.RunLifeCycle();
-            });
+            return builder.UseMiddleware<LightningMiddleware>(StartupType, ConnectionString);
         }
+
+
     }
 }

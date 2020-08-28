@@ -29,12 +29,12 @@ namespace LightningPermission
         /// <summary>
         /// 允许的权限字符串数组
         /// </summary>
-        public string[] AllowRoles;
+        public string[] AllowRoles = null;
 
         /// <summary>
         /// 不允许的权限字符串数组
         /// </summary>
-        public string[] DisAllowRoles;
+        public string[] DisAllowRoles = null;
 
         /// <summary>
         /// 检测权限的方式
