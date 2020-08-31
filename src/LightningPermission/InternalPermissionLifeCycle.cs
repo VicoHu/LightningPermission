@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace LightningPermission
@@ -99,18 +97,18 @@ namespace LightningPermission
         /// <summary>
         /// 生命周期：正在对拥有Attribute的方法进行操作
         /// </summary>
-        public virtual void OnGetMethodAttribute()
+        public virtual void OnGetActionAttribute()
         {
             Console.WriteLine("IsControllerAllow: " + IsControllerAllow);
             if (this.IsControllerAllow)
             {
                 if (this.ControllerType != null)
                 {
-                    this.ActionType = AttributeGetter.AttributeGetter.GetMethodAttributesAfterAsync(this.StartupType, this.context, this.ControllerType, this.next, this.IsControllerAllow, CustomLifeCycle.OnGetMethodAttribute, out this.IsActionAllow);
+                    this.ActionType = AttributeGetter.AttributeGetter.GetMethodAttributesAfterAsync(this.StartupType, this.context, this.ControllerType, this.next, this.IsControllerAllow, CustomLifeCycle.OnGetActionAttribute, out this.IsActionAllow);
                 }
                 else
                 {
-                    this.ActionType = AttributeGetter.AttributeGetter.GetMethodAttributes(this.StartupType, this.context, this.next, this.IsControllerAllow, CustomLifeCycle.OnGetMethodAttribute, out this.IsActionAllow);
+                    this.ActionType = AttributeGetter.AttributeGetter.GetMethodAttributes(this.StartupType, this.context, this.next, this.IsControllerAllow, CustomLifeCycle.OnGetActionAttribute, out this.IsActionAllow);
                 }
             }
             else
@@ -150,7 +148,7 @@ namespace LightningPermission
             Console.WriteLine("BeforeGetMethodAttribute");
 
             // 获取方法Attribute, 并进行操作
-            this.OnGetMethodAttribute();
+            this.OnGetActionAttribute();
             Console.WriteLine("OnGetMethodAttribute");
 
             // 获取方法Attribute之后

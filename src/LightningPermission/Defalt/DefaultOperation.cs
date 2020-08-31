@@ -8,12 +8,26 @@ using System.Threading.Tasks;
 
 namespace LightningPermission
 {
-    internal class DefaultOperation : UserOperation
+    internal class DefaultOperation : IOperation
     {
-        private static string AlertMessage = "Sorry, You Don't Have Permission To Access Here";
+        /// <summary>
+        /// 无法访问时的提示信息
+        /// </summary>
+        protected static string AlertMessage = "Sorry, You Don't Have Permission To Access Here";
 
+        /// <summary>
+        /// Http上下文对象
+        /// </summary>
         protected HttpContext context;
+
+        /// <summary>
+        /// Permission对象实例
+        /// </summary>
         protected Permission permission;
+
+        /// <summary>
+        /// 管道下一个中间件对象实例
+        /// </summary>
         protected RequestDelegate next;
 
         /// <summary>
@@ -29,7 +43,11 @@ namespace LightningPermission
             this.RoleStr = RoleStr;
         }
 
-        public override async Task<Boolean> OnControllerCheck()
+        /// <summary>
+        /// Controller层访问权限检查
+        /// </summary>
+        /// <returns>是否有权限访问</returns>
+        public async Task<Boolean> OnControllerCheck()
         {
             if (permission.Method == Permission.CheckMethod.Allow)
             {
@@ -68,7 +86,12 @@ namespace LightningPermission
             }
         }
 
-        public override async Task<Boolean> OnMethedCheck(bool IsControllerAllow)
+        /// <summary>
+        /// Action层访问访问权限检查
+        /// </summary>
+        /// <param name="IsControllerAllow"></param>
+        /// <returns>是否有权限访问</returns>
+        public async Task<Boolean> OnActionCheck(bool IsControllerAllow)
         {
             if (!IsControllerAllow)
             {
@@ -112,15 +135,19 @@ namespace LightningPermission
 
         }
 
+        /// <summary>
+        /// 无权限访问时，默认的返回信息
+        /// </summary>
+        /// <param name="context">Http上下文对象</param>
+        /// <param name="next">管道下一个中间件的对象实例</param>
         private static async Task Response_403(HttpContext context, RequestDelegate next)
         {
-
             context.Response.ContentType = "application/json";
             // 设置内容编码格式为JSON
             context.Response.StatusCode = 403;
             // 设置Http状态码为403
             await context.Response.Body.WriteAsync(Encoding.Default.GetBytes("{\"status\":\"403\",\"msg\":\"" + AlertMessage + "\"}"));
-            //await next.Invoke(context);
+            // 设置返回的信息
         }
 
     }
