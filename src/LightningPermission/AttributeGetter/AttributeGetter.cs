@@ -135,7 +135,7 @@ namespace LightningPermission.AttributeGetter
                             {
                                 ActionType = methodInfo.GetType();
                                 IsAllow = await WillDoFunc(context, PermissionAuthorize, next, IsControllerAllow);
-                                Console.WriteLine("IsAllow" + IsAllow);
+                                //Console.WriteLine("IsAllow" + IsAllow);
                             }
                         }
                         catch (Exception)
