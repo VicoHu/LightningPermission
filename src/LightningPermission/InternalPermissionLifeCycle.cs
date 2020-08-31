@@ -99,7 +99,7 @@ namespace LightningPermission
         /// </summary>
         public virtual void OnGetActionAttribute()
         {
-            Console.WriteLine("IsControllerAllow: " + IsControllerAllow);
+            //Console.WriteLine("IsControllerAllow: " + IsControllerAllow);
             if (this.IsControllerAllow)
             {
                 if (this.ControllerType != null)
@@ -110,10 +110,6 @@ namespace LightningPermission
                 {
                     this.ActionType = AttributeGetter.AttributeGetter.GetMethodAttributes(this.StartupType, this.context, this.next, this.IsControllerAllow, CustomLifeCycle.OnGetActionAttribute, out this.IsActionAllow);
                 }
-            }
-            else
-            {
-                //this.next.Invoke(context);
             }
         }
 
@@ -133,27 +129,27 @@ namespace LightningPermission
         {
             // 获取控制器Attribute之前
             this.BeforeGetControllerAttribute();
-            Console.WriteLine("BeforeGetControllerAttribute");
+            //Console.WriteLine("BeforeGetControllerAttribute");
 
             // 对获取的控制器Attribute进行操作
             this.OnGetControllerAttribute();
-            Console.WriteLine("OnGetControllerAttribute");
+            //Console.WriteLine("OnGetControllerAttribute");
 
             // 获取控制器Attribute之后
             this.AfterGetControllerAttribute();
-            Console.WriteLine("AfterGetControllerAttribute");
+            //Console.WriteLine("AfterGetControllerAttribute");
 
             // 获取方法Attribute之前
             this.BeforeGetMethodAttribute();
-            Console.WriteLine("BeforeGetMethodAttribute");
+            //Console.WriteLine("BeforeGetMethodAttribute");
 
             // 获取方法Attribute, 并进行操作
             this.OnGetActionAttribute();
-            Console.WriteLine("OnGetMethodAttribute");
+            //Console.WriteLine("OnGetMethodAttribute");
 
             // 获取方法Attribute之后
             this.AfterGetMethodAttribute();
-            Console.WriteLine("AfterGetMethodAttribute\n--------------------------------------");
+            //Console.WriteLine("AfterGetMethodAttribute\n--------------------------------------");
 
             return this.IsControllerAllow && this.IsActionAllow;
             //await this.next.Invoke(context);
