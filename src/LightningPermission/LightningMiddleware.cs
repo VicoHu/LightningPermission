@@ -43,13 +43,12 @@ namespace LightningPermission
         /// 使用用户自定义行为的Lightning身份验证插件
         /// </summary>
         /// <param name="StartupType">Startup的Type对象</param>
-        /// <param name="ConnectionString">数据库连接字符串（暂时仅支持SqlServer）</param>
         /// <param name="permissionLifeCycle">传入用户自定义的生命周期</param>
-        public LightningMiddleware(RequestDelegate next, Type StartupType, string ConnectionString, PermissionLifeCycle permissionLifeCycle)
+        public LightningMiddleware(RequestDelegate next, Type StartupType, PermissionLifeCycle permissionLifeCycle)
         {
             this.next = next;
             this.StartupType = StartupType;
-            this.ConnectionString = ConnectionString;
+            this.ConnectionString = permissionLifeCycle.ConnectionString;
             this.permissionLifeCycle = permissionLifeCycle;
         }
 

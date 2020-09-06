@@ -15,8 +15,12 @@ namespace LightningPermission
         /// <summary>
         /// 数据库连接字符串
         /// </summary>
-        protected string ConnectionString = null;
+        public string ConnectionString = null;
 
+        /// <summary>
+        /// 构造方法
+        /// </summary>
+        /// <param name="ConnectionString"></param>
         public PermissionLifeCycle(string ConnectionString)
         {
             this.ConnectionString = ConnectionString;
@@ -116,7 +120,7 @@ namespace LightningPermission
                 return await operation.OnActionCheck(IsControllerAllow);
             }
             return true;
-        }
+        } 
 
         /// <summary>
         /// 生命周期：获取方法Attribute之后
