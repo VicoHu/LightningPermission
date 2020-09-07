@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace LightningPermission
 {
@@ -99,23 +97,19 @@ namespace LightningPermission
         /// <summary>
         /// 生命周期：正在对拥有Attribute的方法进行操作
         /// </summary>
-        public virtual void OnGetMethodAttribute()
+        public virtual void OnGetActionAttribute()
         {
-            Console.WriteLine("IsControllerAllow: " + IsControllerAllow);
+            //Console.WriteLine("IsControllerAllow: " + IsControllerAllow);
             if (this.IsControllerAllow)
             {
                 if (this.ControllerType != null)
                 {
-                    this.ActionType = AttributeGetter.AttributeGetter.GetMethodAttributesAfterAsync(this.StartupType, this.context, this.ControllerType, this.next, this.IsControllerAllow, CustomLifeCycle.OnGetMethodAttribute, out this.IsActionAllow);
+                    this.ActionType = AttributeGetter.AttributeGetter.GetMethodAttributesAfterAsync(this.StartupType, this.context, this.ControllerType, this.next, this.IsControllerAllow, CustomLifeCycle.OnGetActionAttribute, out this.IsActionAllow);
                 }
                 else
                 {
-                    this.ActionType = AttributeGetter.AttributeGetter.GetMethodAttributes(this.StartupType, this.context, this.next, this.IsControllerAllow, CustomLifeCycle.OnGetMethodAttribute, out this.IsActionAllow);
+                    this.ActionType = AttributeGetter.AttributeGetter.GetMethodAttributes(this.StartupType, this.context, this.next, this.IsControllerAllow, CustomLifeCycle.OnGetActionAttribute, out this.IsActionAllow);
                 }
-            }
-            else
-            {
-                //this.next.Invoke(context);
             }
         }
 
@@ -135,27 +129,27 @@ namespace LightningPermission
         {
             // 获取控制器Attribute之前
             this.BeforeGetControllerAttribute();
-            Console.WriteLine("BeforeGetControllerAttribute");
+            //Console.WriteLine("BeforeGetControllerAttribute");
 
             // 对获取的控制器Attribute进行操作
             this.OnGetControllerAttribute();
-            Console.WriteLine("OnGetControllerAttribute");
+            //Console.WriteLine("OnGetControllerAttribute");
 
             // 获取控制器Attribute之后
             this.AfterGetControllerAttribute();
-            Console.WriteLine("AfterGetControllerAttribute");
+            //Console.WriteLine("AfterGetControllerAttribute");
 
             // 获取方法Attribute之前
             this.BeforeGetMethodAttribute();
-            Console.WriteLine("BeforeGetMethodAttribute");
+            //Console.WriteLine("BeforeGetMethodAttribute");
 
             // 获取方法Attribute, 并进行操作
-            this.OnGetMethodAttribute();
-            Console.WriteLine("OnGetMethodAttribute");
+            this.OnGetActionAttribute();
+            //Console.WriteLine("OnGetMethodAttribute");
 
             // 获取方法Attribute之后
             this.AfterGetMethodAttribute();
-            Console.WriteLine("AfterGetMethodAttribute\n--------------------------------------");
+            //Console.WriteLine("AfterGetMethodAttribute\n--------------------------------------");
 
             return this.IsControllerAllow && this.IsActionAllow;
             //await this.next.Invoke(context);

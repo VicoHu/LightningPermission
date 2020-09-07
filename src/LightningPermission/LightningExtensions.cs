@@ -1,9 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 
 namespace LightningPermission
 {
@@ -16,7 +12,7 @@ namespace LightningPermission
         /// <param name="StartupType">Startup的Type对象</param>
         /// <param name="ConnectionString">数据库连接字符串（暂时仅支持SqlServer）</param>
         /// <param name="permissionLifeCycle">传入用户自定义的生命周期</param>
-        /// <returns></returns>
+        /// <returns>IApplicationBuilder实例</returns>
         public static IApplicationBuilder UseLightningPermission(this IApplicationBuilder builder, Type StartupType, string ConnectionString, IPermissionLifeCycle permissionLifeCycle)
         {
             return builder.UseMiddleware<LightningMiddleware>(StartupType, ConnectionString, permissionLifeCycle);
@@ -33,7 +29,5 @@ namespace LightningPermission
         {
             return builder.UseMiddleware<LightningMiddleware>(StartupType, ConnectionString);
         }
-
-
     }
 }

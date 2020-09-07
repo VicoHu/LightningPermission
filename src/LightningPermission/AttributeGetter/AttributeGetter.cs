@@ -9,7 +9,15 @@ namespace LightningPermission.AttributeGetter
 {
     public class AttributeGetter
     {
-
+        /// <summary>
+        /// 获得控制器特性，并运行自定义的操作
+        /// </summary>
+        /// <param name="StartupType">Startup的Type对象</param>
+        /// <param name="context">Http上下文对象</param>
+        /// <param name="next">管道下一个中间件的实例对象</param>
+        /// <param name="WillDoFunc">将要运行的自定义方法</param>
+        /// <param name="IsControllerAllow">（传出）控制器是否允许通过</param>
+        /// <returns>该控制器的Permission的Type对象</returns>
         public static Type GetControllerAttributes(Type StartupType, HttpContext context, RequestDelegate next, Func<HttpContext, Permission, RequestDelegate, Task<Boolean>> WillDoFunc, out bool IsControllerAllow)
         {
             Type ControllerType = null;
@@ -43,6 +51,16 @@ namespace LightningPermission.AttributeGetter
             return ControllerType;
         }
 
+        /// <summary>
+        /// 获得方法的特性，并运行自定义的操作
+        /// </summary>
+        /// <param name="StartupType">Startup的Type对象</param>
+        /// <param name="context">Http上下文对象</param>
+        /// <param name="next">管道下一个中间件的实例对象</param>
+        /// <param name="IsControllerAllow">该Action所在控制器是否允许访问</param>
+        /// <param name="WillDoFunc">将要运行的自定义方法</param>
+        /// <param name="IsActionAllow">（传出）该Action是否允许通过</param>
+        /// <returns>该Action的Permission的Type对象</returns>
         public static Type GetMethodAttributes(Type StartupType, HttpContext context, RequestDelegate next, bool IsControllerAllow, Func<HttpContext, Permission, RequestDelegate, Boolean, Task<Boolean>> WillDoFunc, out bool IsActionAllow)
         {
             Type ActionType = null;
@@ -50,7 +68,7 @@ namespace LightningPermission.AttributeGetter
             IsActionAllow = false;
             var assembly = StartupType.Assembly.GetTypes().AsEnumerable()
             .Where(type => typeof(ControllerBase).IsAssignableFrom(type)).ToList();
-            assembly.ForEach(async r =>
+            assembly.ForEach(r =>
             {
                 foreach (var methodInfo in r.GetMethods())
                 {
@@ -86,7 +104,17 @@ namespace LightningPermission.AttributeGetter
             return ActionType;
         }
 
-        public static Type GetMethodAttributesAfterAsync(Type StartupType, HttpContext context, Type ControllerType, RequestDelegate next, bool IsControllerAllow, Func<HttpContext, Permission, RequestDelegate, Boolean, Task<Boolean>> WillDoFunc, out bool IsActionAllow)
+        /// <summary>
+        /// 获得Action的特性，并运行自定义的操作（异步）
+        /// </summary>
+        /// <param name="StartupType">Startup的Type对象</param>
+        /// <param name="context">Http上下文对象</param>
+        /// <param name="next">管道下一个中间件的实例对象</param>
+        /// <param name="IsControllerAllow">该Action所在控制器是否允许访问</param>
+        /// <param name="WillDoFunc">将要运行的自定义异步方法</param>
+        /// <param name="IsActionAllow">（传出）该Action是否允许通过</param>
+        /// <returns>该Action的Permission的Type对象</returns>
+        public static Type GetMethodAttributesAfterAsync(Type StartupType, HttpContext context, Type ControllerType, RequestDelegate next, bool IsControllerAllow, Func<HttpContext, Permission, RequestDelegate,  Boolean, Task<Boolean>> WillDoFunc, out bool IsActionAllow)
         {
             Type ActionType = null;
             bool IsAllow = false;
@@ -107,7 +135,7 @@ namespace LightningPermission.AttributeGetter
                             {
                                 ActionType = methodInfo.GetType();
                                 IsAllow = await WillDoFunc(context, PermissionAuthorize, next, IsControllerAllow);
-                                Console.WriteLine("IsAllow" + IsAllow);
+                                //Console.WriteLine("IsAllow" + IsAllow);
                             }
                         }
                         catch (Exception)
