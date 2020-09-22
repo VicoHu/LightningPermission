@@ -50,6 +50,62 @@ namespace LightningPermission
         }
 
         /// <summary>
+        /// 根据TokenStr，更新该TokenStr用户的TokenStr
+        /// </summary>
+        /// <param name="TokenStr">Token字符串</param>
+        /// <returns>是否完成更新</returns>
+        public bool UpdateTokenStrByTokenStr(string TokenStr)
+        {
+            using (var transation = this.context.Database.BeginTransaction())
+            {
+                var user = context.PermissionToken.Where(p => p.TokenStr == TokenStr).FirstOrDefault();
+                // 找到该用户
+                if (user == null)
+                {
+                    // 如果不存在该用户
+                    return false;
+                }
+                user.TokenStr = Guid.NewGuid().ToString().Replace("-", "");
+                context.Entry(user).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                int EffectLineCount = context.SaveChanges();
+                // 保存变化
+                if (EffectLineCount > 0)
+                    transation.Commit();
+                else
+                    transation.Rollback();
+                return EffectLineCount > 0;
+            }
+        }
+
+        /// <summary>
+        /// 根据Uid，更新该Uid用户的TokenStr
+        /// </summary>
+        /// <param name="Uid">用户id</param>
+        /// <returns>是否完成更新</returns>
+        public bool UpdateTokenStrByUid(string Uid)
+        {
+            using (var transation = this.context.Database.BeginTransaction())
+            {
+                var user = context.PermissionToken.Where(p => p.Uid == Uid).FirstOrDefault();
+                // 找到该用户
+                if (user == null)
+                {
+                    // 如果不存在该用户
+                    return false;
+                }
+                user.TokenStr = Guid.NewGuid().ToString().Replace("-", "");
+                context.Entry(user).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                int EffectLineCount = context.SaveChanges();
+                // 保存变化
+                if (EffectLineCount > 0)
+                    transation.Commit();
+                else
+                    transation.Rollback();
+                return EffectLineCount > 0;
+            }
+        }
+
+        /// <summary>
         /// 根据Uid，更新权限
         /// </summary>
         /// <param name="Uid">用户Id</param>
