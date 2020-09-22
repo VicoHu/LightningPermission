@@ -4,7 +4,7 @@ using LightningPermission.Models;
 
 namespace LightningPermission
 {
-    class TokenStore
+    public class TokenStore
     {
         /// <summary>
         /// 数据库连接字符串

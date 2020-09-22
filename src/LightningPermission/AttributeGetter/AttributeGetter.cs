@@ -46,6 +46,11 @@ namespace LightningPermission.AttributeGetter
                         throw;
                     }
                 }
+                else
+                {
+                    // 如果当前控制器没有Permission标注，则说明允许访问
+                    IsAllow = true;
+                }
             });
             IsControllerAllow = IsAllow;
             return ControllerType;
@@ -70,6 +75,7 @@ namespace LightningPermission.AttributeGetter
             .Where(type => typeof(ControllerBase).IsAssignableFrom(type)).ToList();
             assembly.ForEach(r =>
             {
+                bool InStatus = false;
                 foreach (var methodInfo in r.GetMethods())
                 {
                     methodInfo.GetCustomAttributes().ToList().ForEach(async attribute =>
@@ -88,6 +94,7 @@ namespace LightningPermission.AttributeGetter
                                 // 获得当前访问的Action的名字
                                 if (TargetControllerName == r.Name && TargetMethodName == methodInfo.Name)
                                 {
+                                    InStatus = true;
                                     ActionType = methodInfo.GetType();
                                     IsAllow = await WillDoFunc(context, PermissionAuthorize, next, IsControllerAllow);
                                 }
@@ -98,6 +105,10 @@ namespace LightningPermission.AttributeGetter
                             }
                         }
                     });
+                }
+                if (!InStatus)
+                {
+                    IsAllow = true;
                 }
             });
             IsActionAllow = IsAllow;
@@ -119,6 +130,7 @@ namespace LightningPermission.AttributeGetter
             Type ActionType = null;
             bool IsAllow = false;
             IsActionAllow = false;
+            bool InStatus = false;
             foreach (var methodInfo in ControllerType.GetMethods())
             {
                 methodInfo.GetCustomAttributes().ToList().ForEach(async attribute =>
@@ -133,6 +145,7 @@ namespace LightningPermission.AttributeGetter
                             // 获得当前访问的Action的名字
                             if (TargetControllerName == ControllerType.Name && TargetMethodName == methodInfo.Name)
                             {
+                                InStatus = true;
                                 ActionType = methodInfo.GetType();
                                 IsAllow = await WillDoFunc(context, PermissionAuthorize, next, IsControllerAllow);
                                 //Console.WriteLine("IsAllow" + IsAllow);
@@ -144,6 +157,10 @@ namespace LightningPermission.AttributeGetter
                         }
                     }
                 });
+            }
+            if (!InStatus)
+            {
+                IsAllow = true;
             }
             IsActionAllow = IsAllow;
             return ActionType;
