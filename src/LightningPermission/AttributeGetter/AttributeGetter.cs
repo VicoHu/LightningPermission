@@ -127,10 +127,13 @@ namespace LightningPermission.AttributeGetter
         /// <returns>该Action的Permission的Type对象</returns>
         public static Type GetMethodAttributesAfterAsync(Type StartupType, HttpContext context, Type ControllerType, RequestDelegate next, bool IsControllerAllow, Func<HttpContext, Permission, RequestDelegate,  Boolean, Task<Boolean>> WillDoFunc, out bool IsActionAllow)
         {
+            // 初始化Action方法的Type对象
             Type ActionType = null;
+            // 初始化允许通行的标识
             bool IsAllow = false;
             IsActionAllow = false;
             bool InStatus = false;
+            // 遍历所有拥有权限特性的接口方法
             foreach (var methodInfo in ControllerType.GetMethods())
             {
                 methodInfo.GetCustomAttributes().ToList().ForEach(async attribute =>
@@ -158,6 +161,7 @@ namespace LightningPermission.AttributeGetter
                     }
                 });
             }
+            // 判断是否有检测到与目标Action匹配，并拥有权限特性
             if (!InStatus)
             {
                 IsAllow = true;
